@@ -95,14 +95,14 @@ func RegisterBlobber(ctx context.Context) error {
 		return nil
 	}
 
-	//txnHash, err := SendHealthCheck(common.ProviderTypeBlobber)
-	//if err != nil {
-	//	panic("Failed to send healthcheck transaction: " + err.Error())
-	//	logging.Logger.Error("Failed to send healthcheck transaction", zap.String("txn_hash", txnHash))
-	//	return err
-	//}
+	txnHash, err := SendHealthCheck(common.ProviderTypeBlobber)
+	if err != nil {
+		panic("Failed to send healthcheck transaction: " + err.Error())
+		logging.Logger.Error("Failed to send healthcheck transaction", zap.String("txn_hash", txnHash))
+		return err
+	}
 
-	//panic("Blobber registered on chain")
+	panic("Blobber registered on chain")
 
 	return nil
 }
@@ -166,8 +166,9 @@ var ErrValidatorNotFound = errors.New("validator is not found")
 
 func TransactionVerify(txn *transaction.Transaction) (t *transaction.Transaction, err error) {
 	msg := fmt.Sprintf("Verifying transaction: max_retries: %d", util.MAX_RETRIES)
-	logging.Logger.Info(msg)
+	fmt.Println(msg)
 	for i := 0; i < util.MAX_RETRIES; i++ {
+		fmt.Println("Retrying transaction verification: ", i)
 		time.Sleep(transaction.SLEEP_FOR_TXN_CONFIRMATION * time.Second)
 		if t, err = transaction.VerifyTransactionWithNonce(txn.Hash, txn.GetTransaction().GetTransactionNonce()); err == nil {
 			return t, nil
@@ -179,6 +180,8 @@ func TransactionVerify(txn *transaction.Transaction) (t *transaction.Transaction
 
 // SendHealthCheck send heartbeat to blockchain
 func SendHealthCheck(provider common.ProviderType) (string, error) {
+
+	fmt.Println("Sending health check to blockchain for provider: ", provider)
 
 	var txn *transaction.Transaction
 	var err error
@@ -192,15 +195,24 @@ func SendHealthCheck(provider common.ProviderType) (string, error) {
 		return "", errors.New("unknown provider type")
 	}
 
+	fmt.Println("Health check transaction: ", txn)
+
 	if err != nil {
+		fmt.Println("Failed to send health check transaction: ", err.Error())
 		return "", err
 	}
 
+	fmt.Println("Verifying health check transaction: ", txn)
+
 	_, err = TransactionVerify(txn)
+
+	fmt.Println("222222Verified health check transaction: ", txn)
 
 	if err != nil {
 		panic("Failed to verify health check transaction: " + err.Error())
 	}
+
+	fmt.Println("Verified health check transaction: ", txn)
 
 	return txn.Hash, err
 }
