@@ -95,8 +95,11 @@ func RegisterBlobber(ctx context.Context) error {
 		return nil
 	}
 
+	panic("Blobber is already registered")
+
 	txnHash, err := SendHealthCheck(common.ProviderTypeBlobber)
 	if err != nil {
+		panic("Failed to send healthcheck transaction: " + err.Error())
 		logging.Logger.Error("Failed to send healthcheck transaction", zap.String("txn_hash", txnHash))
 		return err
 	}
@@ -194,6 +197,10 @@ func SendHealthCheck(provider common.ProviderType) (string, error) {
 	}
 
 	_, err = TransactionVerify(txn)
+
+	if err != nil {
+		panic("Failed to verify health check transaction: " + err.Error())
+	}
 
 	return txn.Hash, err
 }
