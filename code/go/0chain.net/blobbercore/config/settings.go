@@ -115,8 +115,6 @@ func ReloadFromChain(ctx context.Context, db *gorm.DB) (*zcncore.Blobber, error)
 		return nil, err
 	}
 
-	panic("Blobber found : " + b.ID)
-
 	Configuration.Capacity = int64(b.Capacity)
 	Configuration.NumDelegates = *b.StakePoolSettings.NumDelegates
 
