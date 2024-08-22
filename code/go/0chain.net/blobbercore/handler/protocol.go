@@ -95,14 +95,14 @@ func RegisterBlobber(ctx context.Context) error {
 		return nil
 	}
 
-	txnHash, err := SendHealthCheck(common.ProviderTypeBlobber)
-	if err != nil {
-		panic("Failed to send healthcheck transaction: " + err.Error())
-		logging.Logger.Error("Failed to send healthcheck transaction", zap.String("txn_hash", txnHash))
-		return err
-	}
+	//txnHash, err := SendHealthCheck(common.ProviderTypeBlobber)
+	//if err != nil {
+	//	panic("Failed to send healthcheck transaction: " + err.Error())
+	//	logging.Logger.Error("Failed to send healthcheck transaction", zap.String("txn_hash", txnHash))
+	//	return err
+	//}
 
-	panic("Blobber registered on chain")
+	//panic("Blobber registered on chain")
 
 	return nil
 }
