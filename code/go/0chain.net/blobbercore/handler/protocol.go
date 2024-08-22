@@ -95,8 +95,6 @@ func RegisterBlobber(ctx context.Context) error {
 		return nil
 	}
 
-	panic("Blobber is already registered")
-
 	txnHash, err := SendHealthCheck(common.ProviderTypeBlobber)
 	if err != nil {
 		panic("Failed to send healthcheck transaction: " + err.Error())
