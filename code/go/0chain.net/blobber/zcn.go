@@ -58,11 +58,7 @@ func registerOnChain() error {
 		}
 	}
 
-	if err != nil {
-		return err
-	}
-
-	fmt.Print("	[OK]\n")
+	fmt.Print("Jayash	[OK]\n")
 
 	ctx := common.GetRootContext()
 	go setupWorkers(ctx)
