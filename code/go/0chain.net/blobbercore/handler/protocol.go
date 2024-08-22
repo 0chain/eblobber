@@ -102,7 +102,7 @@ func RegisterBlobber(ctx context.Context) error {
 		return err
 	}
 
-	fmt.Println("Blobber registered on chain")
+	panic("Blobber registered on chain")
 
 	return nil
 }
