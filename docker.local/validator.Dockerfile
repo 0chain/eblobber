@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 ARG DOCKER_IMAGE_BASE
-FROM $DOCKER_IMAGE_BASE as validator_build
+FROM $DOCKER_IMAGE_BASE AS validator_build
 
 LABEL zchain="validator"
 

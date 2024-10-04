@@ -247,10 +247,12 @@ func GetRefs(ctx context.Context, allocationID, path, offsetPath, _type string, 
 	path = filepath.Clean(path)
 	tx := datastore.GetStore().GetTransaction(ctx)
 	pathLevel := len(strings.Split(strings.TrimSuffix(path, "/"), "/"))
+	logging.Logger.Info("getRefs: CheckSingleRef", zap.Int("pathLevel", pathLevel), zap.Int("level", level), zap.String("path", path), zap.String("offsetPath", offsetPath), zap.String("type", _type), zap.Int("pageLimit", pageLimit))
 	if (pageLimit == 1 && offsetPath == "" && (pathLevel == level || level == 0) && _type != FILE) || (parentRef != nil && parentRef.Type == FILE) {
 		pRefs = append(pRefs, *parentRef)
 		refs = &pRefs
 		newOffsetPath = parentRef.Path
+		return
 	}
 
 	if pathLevel+1 == level {
@@ -264,7 +266,11 @@ func GetRefs(ctx context.Context, allocationID, path, offsetPath, _type string, 
 		}
 		dbQuery = dbQuery.Order("path")
 	} else {
-		dbQuery = tx.Model(&Ref{}).Where("allocation_id = ? AND path LIKE ?", allocationID, path+"%")
+		listPath := path
+		if path != "/" {
+			listPath = path + "/"
+		}
+		dbQuery = tx.Model(&Ref{}).Where("allocation_id = ? AND path LIKE ?", allocationID, listPath+"%")
 		if _type != "" {
 			dbQuery = dbQuery.Where("type = ?", _type)
 		}
