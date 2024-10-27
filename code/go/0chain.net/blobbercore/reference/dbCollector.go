@@ -36,7 +36,8 @@ type RefCache struct {
 }
 
 var (
-	cacheMap = make(map[string]*RefCache)
+	cacheMap     = make(map[string]*RefCache)
+	cacheMapLock sync.RWMutex
 )
 
 func NewCollector(changes int) QueryCollector {
@@ -91,8 +92,10 @@ func (dc *dbCollector) Finalize(ctx context.Context, allocationID string, alloca
 		}
 	}
 	dc.refCache.AllocationVersion = allocationVersion
+	cacheMapLock.Lock()
 	cacheMap[allocationID] = &(dc.refCache)
 	logging.Logger.Info("Finalize", zap.Int("created", len(dc.createdRefs)), zap.Int("deleted", len(dc.deletedRefs)), zap.Int64("allocation_version", cacheMap[allocationID].AllocationVersion), zap.String("allocation_id", allocationID))
+	cacheMapLock.Unlock()
 	return nil
 }
 
@@ -109,11 +112,15 @@ func (dc *dbCollector) GetFromCache(lookupHash string) *Ref {
 }
 
 func GetRefCache(allocationID string) *RefCache {
+	cacheMapLock.RLock()
+	defer cacheMapLock.RUnlock()
 	return cacheMap[allocationID]
 }
 
 func DeleteRefCache(allocationID string) {
+	cacheMapLock.Lock()
 	cacheMap[allocationID] = nil
+	delete(cacheMap, allocationID)
 }
 
 func (dc *dbCollector) LockTransaction() {
