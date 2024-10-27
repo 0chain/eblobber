@@ -120,7 +120,7 @@ func GetRefCache(allocationID string) *RefCache {
 func DeleteRefCache(allocationID string) {
 	cacheMapLock.Lock()
 	cacheMap[allocationID] = nil
-	delete(cacheMap, allocationID)
+	cacheMapLock.Unlock()
 }
 
 func (dc *dbCollector) LockTransaction() {
