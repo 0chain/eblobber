@@ -40,10 +40,12 @@ func (nf *NewDir) ApplyChange(ctx context.Context,
 		dirLookupHash := reference.GetReferenceLookup(nf.AllocationID, nf.Path)
 		dRef, err := reference.GetLimitedRefFieldsByLookupHash(ctx, nf.AllocationID, dirLookupHash, []string{"id"})
 		if err != nil && err != gorm.ErrRecordNotFound {
-			logging.Logger.Error("ApplyChange:GetLimitedRefFieldsByLookupHash", zap.Error(err))
+			logging.Logger.Error("ApplyChange:Newdir", zap.Error(err))
 			return err
 		}
-		if dRef == nil || dRef.ID == 0 {
+		err = nil
+		// already exists
+		if dRef != nil && dRef.ID != 0 {
 			return nil
 		}
 		parentIDRef := &parentRef.ID
