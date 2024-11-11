@@ -11,6 +11,8 @@ import (
 	"github.com/0chain/blobber/code/go/0chain.net/blobbercore/util"
 	"github.com/0chain/blobber/code/go/0chain.net/core/common"
 	"github.com/0chain/blobber/code/go/0chain.net/core/encryption"
+	"github.com/0chain/blobber/code/go/0chain.net/core/logging"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -33,6 +35,19 @@ func (nf *NewDir) ApplyChange(ctx context.Context,
 	if parentRef == nil || parentRef.ID == 0 {
 		_, err = reference.Mkdir(ctx, nf.AllocationID, nf.Path, allocationVersion, ts, collector)
 	} else {
+		collector.LockTransaction()
+		defer collector.UnlockTransaction()
+		dirLookupHash := reference.GetReferenceLookup(nf.AllocationID, nf.Path)
+		dRef, err := reference.GetLimitedRefFieldsByLookupHash(ctx, nf.AllocationID, dirLookupHash, []string{"id"})
+		if err != nil && err != gorm.ErrRecordNotFound {
+			logging.Logger.Error("ApplyChange:Newdir", zap.Error(err))
+			return err
+		}
+		err = nil
+		// already exists
+		if dRef != nil && dRef.ID != 0 {
+			return nil
+		}
 		parentIDRef := &parentRef.ID
 		newRef := reference.NewDirectoryRef()
 		newRef.AllocationID = nf.AllocationID
@@ -43,7 +58,7 @@ func (nf *NewDir) ApplyChange(ctx context.Context,
 		newRef.Name = filepath.Base(nf.Path)
 		newRef.PathLevel = len(strings.Split(strings.TrimRight(nf.Path, "/"), "/"))
 		newRef.ParentID = parentIDRef
-		newRef.LookupHash = reference.GetReferenceLookup(nf.AllocationID, nf.Path)
+		newRef.LookupHash = dirLookupHash
 		newRef.CreatedAt = ts
 		newRef.UpdatedAt = ts
 		newRef.FileMetaHash = encryption.FastHash(newRef.GetFileMetaHashData())
