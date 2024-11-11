@@ -256,6 +256,7 @@ func Mkdir(ctx context.Context, allocationID, destpath string, allocationVersion
 		newRef.AllocationVersion = allocationVersion
 		err = db.Create(newRef).Error
 		if err != nil {
+			logging.Logger.Error("mkdir: failed to create directory", zap.Error(err), zap.String("path", fields[i]))
 			return nil, err
 		}
 		collector.AddToCache(newRef)
