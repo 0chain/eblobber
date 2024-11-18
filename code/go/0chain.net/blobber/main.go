@@ -43,14 +43,11 @@ func main() {
 	// prepare is to configure more.
 	// when enabled "// +build integration_tests", this sets blobber for conductor tests.
 	prepareBlobber(node.Self.ID)
-
+	common.SetBlobberRegistered(true)
 	go func() {
 		if err := registerOnChain(); err != nil {
 			logging.Logger.Error("Error register on blockchain" + err.Error())
-			panic(err)
 		}
-
-		common.SetBlobberRegistered(true)
 	}()
 
 	if err := setStorageScConfigFromChain(); err != nil {
