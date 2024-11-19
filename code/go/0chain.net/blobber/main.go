@@ -50,11 +50,6 @@ func main() {
 		}
 	}()
 
-	if err := setStorageScConfigFromChain(); err != nil {
-		logging.Logger.Error("Error setStorageScConfigFromChain" + err.Error())
-		panic(err)
-	}
-
 	// todo: activate this when gRPC functionalities are implemented
 	// go startGRPCServer()
 
