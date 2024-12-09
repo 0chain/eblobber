@@ -76,7 +76,7 @@ rate_limiters:
   # Max upload limit in a month for a client. Default is 2000GB(the value needs to be in blocks which is data/64KB)
   upload_limit_monthly: 31250000
   # Max commit limit in a month for a client. Default is 30000
-  commit_limit_monthly: 30000
+  commit_limit_monthly: 1000000000
   # Max commit limit in a day for a client. Default is 1600
   commit_limit_daily: 1600
   # Max commit limit with size zero or less in a day for a client. Default is 400

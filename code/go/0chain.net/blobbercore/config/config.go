@@ -32,7 +32,7 @@ func SetupDefaultConfig() {
 	viper.SetDefault("rate_limiters.block_limit_request", 500)
 	viper.SetDefault("rate_limiters.block_limit_monthly", 31250000)
 	viper.SetDefault("rate_limiters.upload_limit_monthly", 31250000)
-	viper.SetDefault("rate_limiters.commit_limit_monthly", 30000)
+	viper.SetDefault("rate_limiters.commit_limit_monthly", 1000000000)
 	viper.SetDefault("rate_limiters.commit_limit_daily", 1600)
 	viper.SetDefault("rate_limiters.commit_zero_limit_daily", 400)
 	viper.SetDefault("rate_limiters.max_connection_changes", 100)
